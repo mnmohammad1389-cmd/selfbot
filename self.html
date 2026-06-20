@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 ورود به ربات</title>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 50px 40px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .header .logo {
+            font-size: 60px;
+            background: linear-gradient(135deg, #0088cc, #00bfff);
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.3);
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 15px 18px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
+            font-size: 16px;
+            font-family: 'Vazirmatn', sans-serif;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            direction: ltr;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 0;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #0088cc;
+            background: rgba(255, 255, 255, 0.08);
+            box-shadow: 0 0 0 4px rgba(0, 136, 204, 0.1);
+        }
+
+        .form-group input.code-input {
+            font-size: 28px;
+            letter-spacing: 10px;
+            font-weight: 700;
+            padding: 20px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: 'Vazirmatn', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #0088cc, #00bfff);
+            color: white;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 136, 204, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #00b894, #00cec9);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 10px 30px rgba(0, 206, 201, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e17055, #d63031);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 10px 30px rgba(214, 48, 49, 0.3);
+        }
+
+        .message {
+            padding: 14px 18px;
+            border-radius: 14px;
+            margin-top: 15px;
+            display: none;
+            font-weight: 500;
+            animation: slideDown 0.3s ease;
+            text-align: center;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.success {
+            display: block;
+            background: rgba(0, 206, 201, 0.15);
+            color: #00cec9;
+            border: 1px solid rgba(0, 206, 201, 0.2);
+        }
+
+        .message.error {
+            display: block;
+            background: rgba(214, 48, 49, 0.15);
+            color: #ff7675;
+            border: 1px solid rgba(214, 48, 49, 0.2);
+        }
+
+        .message.info {
+            display: block;
+            background: rgba(0, 136, 204, 0.15);
+            color: #74b9ff;
+            border: 1px solid rgba(0, 136, 204, 0.2);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s ease infinite;
+            vertical-align: middle;
+            margin-left: 10px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .status-card {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: none;
+            text-align: center;
+        }
+
+        .status-card.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .status-card .user-info {
+            color: #fff;
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        .status-card .user-info span {
+            color: #00bfff;
+            font-weight: 700;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.1), transparent);
+            margin: 20px 0;
+        }
+
+        .telegram-code-box {
+            background: rgba(0, 136, 204, 0.05);
+            border: 1px dashed rgba(0, 136, 204, 0.2);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .telegram-code-box p {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+        }
+
+        .telegram-code-box strong {
+            color: #00bfff;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .header .logo {
+                width: 70px;
+                height: 70px;
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app">
+        <!-- هدر -->
+        <div class="header">
+            <div class="logo">🤖</div>
+            <h1>ورود به ربات</h1>
+            <p>شماره خود را وارد کنید</p>
+        </div>
+
+        <!-- فرم ورود (مرحله ۱) -->
+        <div id="loginForm">
+            <div class="form-group">
+                <label>📞 شماره تلفن</label>
+                <input 
+                    type="tel" 
+                    id="phone" 
+                    placeholder="مثال: 09123456789" 
+                    dir="ltr"
+                >
+                <small style="color: rgba(255,255,255,0.3); font-size: 12px; display: block; margin-top: 5px; text-align: center;">
+                    با کد کشور وارد کنید (مثال: 989123456789)
+                </small>
+            </div>
+
+            <button class="btn" id="sendCodeBtn" onclick="sendCode()">
+                📤 دریافت کد تأیید
+            </button>
+        </div>
+
+        <!-- فرم تأیید کد (مرحله ۲) -->
+        <div id="verifyForm" class="hidden">
+            <div class="telegram-code-box">
+                <p>📨 کد تأیید به <strong>تلگرام</strong> شما ارسال شد</p>
+            </div>
+
+            <div class="form-group" style="margin-top: 20px;">
+                <label>کد تأیید</label>
+                <input 
+                    type="text" 
+                    id="verifyCode" 
+                    class="code-input"
+                    placeholder="_ _ _ _ _" 
+                    dir="ltr" 
+                    maxlength="5"
+                    autofocus
+                >
+                <small style="color: rgba(255,255,255,0.3); font-size: 12px; display: block; margin-top: 8px; text-align: center;">
+                    کد ۵ رقمی ارسال شده به تلگرام را وارد کنید
+                </small>
+            </div>
+
+            <button class="btn btn-secondary" id="verifyBtn" onclick="verifyCode()">
+                ✅ تأیید و ورود
+            </button>
+
+            <button class="btn" style="background: rgba(255,255,255,0.05); color: rgba(255,255,255,0.5); margin-top: 10px;" onclick="backToLogin()">
+                ↩️ ارسال مجدد کد
+            </button>
+        </div>
+
+        <!-- پیام‌ها -->
+        <div id="message" class="message"></div>
+
+        <!-- کارت وضعیت (بعد از ورود موفق) -->
+        <div id="statusCard" class="status-card">
+            <div style="font-size: 50px; margin-bottom: 10px;">✅</div>
+            <h2 style="color: #00cec9; font-size: 20px;">ورود موفق!</h2>
+            <div class="user-info">
+                👤 <span id="userName">-</span>
+            </div>
+            <div class="user-info">
+                📱 <span id="userPhone">-</span>
+            </div>
+            <div class="divider"></div>
+
+            <!-- بخش ارسال پیام -->
+            <div class="form-group" style="text-align: right;">
+                <label style="color: rgba(255,255,255,0.6); font-size: 13px;">📤 ارسال پیام</label>
+                <input 
+                    type="text" 
+                    id="targetUser" 
+                    placeholder="آیدی یا شماره مقصد" 
+                    dir="ltr"
+                    style="text-align: right; margin-bottom: 10px;"
+                >
+                <input 
+                    type="text" 
+                    id="messageText" 
+                    placeholder="متن پیام" 
+                    dir="rtl"
+                    style="text-align: right;"
+                >
+            </div>
+            <button class="btn btn-secondary" onclick="sendMessage()" style="margin-top: 5px;">
+                📨 ارسال پیام
+            </button>
+
+            <div class="divider"></div>
+            <button class="btn btn-danger" onclick="logout()">
+                🚪 خروج از حساب
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // ============ متغیرها ============
+        let currentPhone = '';
+        let isLoggedIn = false;
+
+        // ============ نمایش پیام ============
+        function showMessage(text, type = 'info') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            msg.style.display = 'block';
+            
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 8000);
+        }
+
+        // ============ نمایش لودینگ ============
+        function showLoading(btnId) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading-spinner"></span> در حال ارسال...';
+        }
+
+        function hideLoading(btnId, text) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = false;
+            btn.textContent = text;
+        }
+
+        // ============ دریافت کد (مرحله ۱) ============
+        async function sendCode() {
+            const phone = document.getElementById('phone').value.trim();
+
+            if (!phone) {
+                showMessage('❌ لطفاً شماره تلفن را وارد کنید', 'error');
+                return;
+            }
+
+            if (!/^\+?[0-9]{10,15}$/.test(phone)) {
+                showMessage('❌ شماره تلفن نامعتبر است', 'error');
+                return;
+            }
+
+            currentPhone = phone;
+            showLoading('sendCodeBtn');
+
+            try {
+                const response = await fetch('/send_code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage('✅ ' + data.message, 'success');
+                    
+                    // مخفی کردن فرم شماره و نمایش فرم کد
+                    document.getElementById('loginForm').classList.add('hidden');
+                    document.getElementById('verifyForm').classList.remove('hidden');
+                    document.getElementById('verifyCode').focus();
+                    
+                } else {
+                    showMessage('❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ خطا: ' + error.message, 'error');
+            }
+
+            hideLoading('sendCodeBtn', '📤 دریافت کد تأیید');
+        }
+
+        // ============ تأیید کد (مرحله ۲) ============
+        async function verifyCode() {
+            const code = document.getElementById('verifyCode').value.trim();
+
+            if (!code || !/^\d{5}$/.test(code)) {
+                showMessage('❌ کد باید ۵ رقمی باشد', 'error');
+                return;
+            }
+
+            showLoading('verifyBtn');
+
+            try {
+                const response = await fetch('/verify_code', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code, phone: currentPhone })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage('✅ ' + data.message, 'success');
+                    document.getElementById('verifyForm').classList.add('hidden');
+                    document.getElementById('loginForm').classList.add('hidden');
+                    updateStatusCard(data.user);
+                    isLoggedIn = true;
+                } else {
+                    showMessage('❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ خطا: ' + error.message, 'error');
+            }
+
+            hideLoading('verifyBtn', '✅ تأیید و ورود');
+        }
+
+        // ============ بازگشت به مرحله ۱ ============
+        function backToLogin() {
+            document.getElementById('verifyForm').classList.add('hidden');
+            document.getElementById('loginForm').classList.remove('hidden');
+            document.getElementById('verifyCode').value = '';
+            document.getElementById('message').style.display = 'none';
+            document.getElementById('phone').focus();
+        }
+
+        // ============ آپدیت کارت وضعیت ============
+        function updateStatusCard(user) {
+            const card = document.getElementById('statusCard');
+            card.classList.add('active');
+            
+            document.getElementById('userName').textContent = 
+                user?.first_name || user?.username || 'ناشناس';
+            document.getElementById('userPhone').textContent = 
+                user?.phone || currentPhone || '-';
+        }
+
+        // ============ ارسال پیام ============
+        async function sendMessage() {
+            if (!isLoggedIn) {
+                showMessage('❌ ابتدا وارد حساب خود شوید', 'error');
+                return;
+            }
+
+            const target = document.getElementById('targetUser').value.trim();
+            const message = document.getElementById('messageText').value.trim();
+
+            if (!target || !message) {
+                showMessage('❌ لطفاً مقصد و متن پیام را وارد کنید', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch('/send_message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target, message })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showMessage('✅ ' + data.message, 'success');
+                    document.getElementById('messageText').value = '';
+                } else {
+                    showMessage('❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ خطا: ' + error.message, 'error');
+            }
+        }
+
+        // ============ خروج ============
+        async function logout() {
+            if (!confirm('آیا مطمئن هستید که می‌خواهید خارج شوید؟')) return;
+
+            try {
+                const response = await fetch('/logout', { method: 'POST' });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage('✅ ' + data.message, 'success');
+                    document.getElementById('statusCard').classList.remove('active');
+                    document.getElementById('loginForm').classList.remove('hidden');
+                    document.getElementById('phone').value = '';
+                    document.getElementById('targetUser').value = '';
+                    document.getElementById('messageText').value = '';
+                    isLoggedIn = false;
+                } else {
+                    showMessage('❌ ' + data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('❌ خطا: ' + error.message, 'error');
+            }
+        }
+
+        // ============ پشتیبانی از Enter ============
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                if (!document.getElementById('verifyForm').classList.contains('hidden')) {
+                    verifyCode();
+                } else if (!document.getElementById('loginForm').classList.contains('hidden')) {
+                    sendCode();
+                }
+            }
+        });
+
+        // ============ فوکوس خودکار روی فیلد کد ============
+        document.getElementById('verifyCode').addEventListener('input', function() {
+            if (this.value.length === 5) {
+                verifyCode();
+            }
+        });
+    </script>
+</body>
+</html>
