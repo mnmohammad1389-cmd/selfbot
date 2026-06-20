@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>کنترل ربات تغییر اسم</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-family: 'Vazirmatn', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0a0a0a;
+            padding: 15px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .bg-3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            background: radial-gradient(ellipse at center, #1a1a2e 0%, #16213e 50%, #0f0f1f 100%);
+        }
+
+        .bg-3d::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(118, 75, 162, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 50% 80%, rgba(72, 187, 120, 0.08) 0%, transparent 40%);
+            animation: rotateBg 60s linear infinite;
+        }
+
+        @keyframes rotateBg {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.2); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: floatParticle linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100vh) rotate(720deg); opacity: 0; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-radius: clamp(20px, 5vw, 30px);
+            padding: clamp(25px, 5vw, 50px);
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: clamp(20px, 4vw, 35px);
+        }
+
+        .header .icon {
+            display: inline-block;
+            font-size: clamp(3em, 8vw, 4.5em);
+            margin-bottom: 8px;
+            animation: floatIcon 3s ease-in-out infinite;
+            filter: drop-shadow(0 10px 30px rgba(102, 126, 234, 0.3));
+            line-height: 1;
+        }
+
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0px) rotate(-5deg); }
+            50% { transform: translateY(-10px) rotate(5deg); }
+        }
+
+        .header h1 {
+            color: #fff;
+            font-size: clamp(1.4em, 5vw, 2.2em);
+            font-weight: 900;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .header .subtitle {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: clamp(0.7em, 1.8vw, 0.85em);
+            margin-top: 5px;
+            letter-spacing: 2px;
+        }
+
+        .status-box {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: clamp(15px, 3vw, 20px);
+            padding: clamp(25px, 5vw, 35px) clamp(15px, 3vw, 20px);
+            margin-bottom: clamp(20px, 4vw, 30px);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .status-box.active {
+            border-color: rgba(40, 167, 69, 0.3);
+            box-shadow: 0 0 40px rgba(40, 167, 69, 0.1), inset 0 0 40px rgba(40, 167, 69, 0.05);
+        }
+
+        .status-box.inactive {
+            border-color: rgba(220, 53, 69, 0.2);
+            box-shadow: 0 0 40px rgba(220, 53, 69, 0.05);
+        }
+
+        .status-box .glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: clamp(100px, 25vw, 150px);
+            height: clamp(100px, 25vw, 150px);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            filter: blur(60px);
+            opacity: 0.2;
+            transition: all 0.5s;
+        }
+
+        .status-box.active .glow {
+            background: radial-gradient(circle, #28a745 0%, transparent 70%);
+            opacity: 0.3;
+        }
+
+        .status-box.inactive .glow {
+            background: radial-gradient(circle, #dc3545 0%, transparent 70%);
+            opacity: 0.1;
+        }
+
+        .status-icon {
+            font-size: clamp(3em, 10vw, 4.5em);
+            display: block;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            line-height: 1;
+        }
+
+        .status-box.active .status-icon {
+            animation: pulseIcon 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseIcon {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        .status-text {
+            font-size: clamp(1.3em, 5vw, 1.8em);
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.9);
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s;
+            line-height: 1.2;
+        }
+
+        .status-text.active {
+            color: #28a745;
+            text-shadow: 0 0 30px rgba(40, 167, 69, 0.3);
+        }
+
+        .status-text.inactive {
+            color: #dc3545;
+            text-shadow: 0 0 30px rgba(220, 53, 69, 0.2);
+        }
+
+        .current-name {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: clamp(0.7em, 1.8vw, 0.85em);
+            margin-top: 6px;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 1px;
+            word-break: break-all;
+        }
+
+        .button-group {
+            display: flex;
+            gap: clamp(10px, 2vw, 15px);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1 1 auto;
+            min-width: clamp(120px, 35vw, 140px);
+            padding: clamp(14px, 3vw, 16px) clamp(20px, 4vw, 30px);
+            border: none;
+            border-radius: clamp(12px, 2.5vw, 16px);
+            font-size: clamp(14px, 2.5vw, 17px);
+            font-weight: 700;
+            font-family: 'Vazirmatn', 'Segoe UI', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+            color: #fff;
+            letter-spacing: 0.5px;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-activate {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 8px 30px rgba(40, 167, 69, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-activate:hover:not(:disabled) {
+            transform: perspective(600px) rotateX(-4deg) translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 45px rgba(40, 167, 69, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-activate:active:not(:disabled) {
+            transform: perspective(600px) rotateX(0deg) translateY(0) scale(0.95);
+        }
+
+        .btn-deactivate {
+            background: linear-gradient(135deg, #dc3545 0%, #e74c6f 100%);
+            box-shadow: 0 8px 30px rgba(220, 53, 69, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-deactivate:hover:not(:disabled) {
+            transform: perspective(600px) rotateX(-4deg) translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 45px rgba(220, 53, 69, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-deactivate:active:not(:disabled) {
+            transform: perspective(600px) rotateX(0deg) translateY(0) scale(0.95);
+        }
+
+        button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: perspective(600px) rotateX(0deg) scale(0.95) !important;
+            box-shadow: none !important;
+        }
+
+        .btn-loading {
+            color: transparent !important;
+            position: relative;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: clamp(22px, 4vw, 28px);
+            height: clamp(22px, 4vw, 28px);
+            top: 50%;
+            left: 50%;
+            margin-left: calc(clamp(22px, 4vw, 28px) / -2);
+            margin-top: calc(clamp(22px, 4vw, 28px) / -2);
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .message {
+            margin-top: clamp(15px, 3vw, 20px);
+            padding: clamp(12px, 2vw, 14px) clamp(14px, 3vw, 18px);
+            border-radius: clamp(10px, 2vw, 14px);
+            display: none;
+            font-weight: 600;
+            font-size: clamp(13px, 2vw, 15px);
+            animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            word-break: break-word;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .message.success {
+            display: block;
+            background: rgba(40, 167, 69, 0.15);
+            color: #7ddfa0;
+            border-color: rgba(40, 167, 69, 0.2);
+        }
+
+        .message.error {
+            display: block;
+            background: rgba(220, 53, 69, 0.15);
+            color: #f8a5b5;
+            border-color: rgba(220, 53, 69, 0.2);
+        }
+
+        .message.info {
+            display: block;
+            background: rgba(102, 126, 234, 0.15);
+            color: #a8b5f0;
+            border-color: rgba(102, 126, 234, 0.2);
+        }
+
+        .footer {
+            margin-top: clamp(20px, 3vw, 25px);
+            text-align: center;
+            color: rgba(255, 255, 255, 0.12);
+            font-size: clamp(0.6em, 1.5vw, 0.75em);
+            letter-spacing: 1px;
+        }
+
+        @media (max-width: 600px) {
+            body { padding: 10px; align-items: flex-start; padding-top: 20px; }
+            .button-group { gap: 10px; }
+            button { min-width: 100%; padding: 16px 20px; font-size: 16px; }
+        }
+
+        @media (max-width: 400px) {
+            body { padding: 8px; padding-top: 15px; }
+            .container { padding: 16px 12px; border-radius: 16px; }
+            .status-box { padding: 18px 10px; margin-bottom: 18px; }
+            .header h1 { font-size: 1.3em; }
+            .status-icon { font-size: 2.8em; }
+            .status-text { font-size: 1.2em; }
+            button { font-size: 14px; padding: 14px 16px; border-radius: 12px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+            .bg-3d::before { animation: none; }
+            .header .icon { animation: none; }
+            .status-box.active .status-icon { animation: none; }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .bg-3d { background: radial-gradient(ellipse at center, #e8e8f0 0%, #d0d0e0 50%, #b8b8c8 100%); }
+            .container { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05); }
+            .header h1 { background: linear-gradient(135deg, #4a5fb0 0%, #6a3b8a 50%, #d06b8a 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+            .header .subtitle { color: rgba(0, 0, 0, 0.5); }
+            .status-box { background: rgba(0, 0, 0, 0.03); border-color: rgba(0, 0, 0, 0.06); }
+            .status-text { color: rgba(0, 0, 0, 0.8); }
+            .current-name { color: rgba(0, 0, 0, 0.4); }
+            .footer { color: rgba(0, 0, 0, 0.2); }
+            .particle { background: rgba(0, 0, 0, 0.05); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-3d"></div>
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <div class="header">
+            <span class="icon">⏰</span>
+            <h1>تغییر اسم به ساعت</h1>
+            <p class="subtitle">✦ فعال یا غیرفعال کردن ✦</p>
+        </div>
+
+        <div class="status-box inactive" id="statusBox">
+            <div class="glow"></div>
+            <span class="status-icon" id="statusIcon">⭕</span>
+            <div class="status-text inactive" id="statusText">غیرفعال</div>
+            <div class="current-name" id="currentName">اسم فعلی: ---</div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-activate" id="activateBtn" onclick="activateBot()">
+                ✅ فعال‌سازی
+            </button>
+            <button class="btn-deactivate" id="deactivateBtn" onclick="deactivateBot()" disabled>
+                ❌ قطع کردن
+            </button>
+        </div>
+
+        <div id="message" class="message"></div>
+        <div class="footer">⚡ وضعیت در مرورگر ذخیره میشود</div>
+    </div>
+
+    <script>
+        // =====================================================
+        // 🔑 توکن ربات خود را اینجا وارد کنید
+        // =====================================================
+        const BOT_TOKEN = "8988496067:AAGHldE3ZwBdKUFUeXWrJtBfZDM1-ye0oHY";
+        // =====================================================
+
+        let isActive = false;
+        let botInfo = null;
+        let updateInterval = null;
+
+        // ===== ساخت ذرات =====
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const count = window.innerWidth < 600 ? 15 : 30;
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (Math.random() * 20 + 15) + 's';
+                particle.style.animationDelay = (Math.random() * 20) + 's';
+                particle.style.opacity = Math.random() * 0.3 + 0.1;
+                container.appendChild(particle);
+            }
+        }
+
+        // ===== دریافت ساعت جاری =====
+        function getCurrentTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            return hours + ':' + minutes;
+        }
+
+        // ===== تغییر اسم ربات =====
+        async function updateBotName() {
+            if (!isActive || !BOT_TOKEN) return;
+            
+            const currentTime = getCurrentTime();
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setMyName?name=${currentTime}`);
+                const data = await response.json();
+                if (data.ok) {
+                    document.getElementById('currentName').textContent = `اسم فعلی: ${currentTime}`;
+                    console.log(`✅ اسم تغییر کرد به: ${currentTime}`);
+                }
+            } catch (error) {
+                console.error('❌ خطا در تغییر اسم:', error);
+            }
+        }
+
+        // ===== بارگذاری وضعیت =====
+        function loadState() {
+            const savedStatus = localStorage.getItem('botActive_time');
+            if (savedStatus === 'true') {
+                isActive = true;
+                checkBotStatus();
+            } else {
+                updateUI();
+            }
+        }
+
+        // ===== به‌روزرسانی UI =====
+        function updateUI() {
+            const statusBox = document.getElementById('statusBox');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            const currentName = document.getElementById('currentName');
+            const activateBtn = document.getElementById('activateBtn');
+            const deactivateBtn = document.getElementById('deactivateBtn');
+
+            if (isActive && botInfo) {
+                statusBox.className = 'status-box active';
+                statusIcon.textContent = '✅';
+                statusText.textContent = 'فعال';
+                statusText.className = 'status-text active';
+                currentName.textContent = `ربات: ${botInfo.first_name}`;
+                activateBtn.disabled = true;
+                deactivateBtn.disabled = false;
+            } else if (isActive && !botInfo) {
+                statusBox.className = 'status-box active';
+                statusIcon.textContent = '⏳';
+                statusText.textContent = 'در حال اتصال...';
+                statusText.className = 'status-text';
+                currentName.textContent = 'در حال بررسی...';
+                activateBtn.disabled = true;
+                deactivateBtn.disabled = true;
+            } else {
+                statusBox.className = 'status-box inactive';
+                statusIcon.textContent = '⭕';
+                statusText.textContent = 'غیرفعال';
+                statusText.className = 'status-text inactive';
+                currentName.textContent = 'اسم فعلی: ---';
+                activateBtn.disabled = false;
+                deactivateBtn.disabled = true;
+                
+                if (updateInterval) {
+                    clearInterval(updateInterval);
+                    updateInterval = null;
+                }
+            }
+
+            localStorage.setItem('botActive_time', isActive);
+        }
+
+        // ===== نمایش پیام =====
+        function showMessage(text, type = 'info') {
+            const msg = document.getElementById('message');
+            msg.textContent = text;
+            msg.className = `message ${type}`;
+            setTimeout(() => { msg.className = 'message'; }, 5000);
+        }
+
+        // ===== بررسی ربات =====
+        async function checkBotStatus() {
+            if (!BOT_TOKEN || BOT_TOKEN === "1234567890:ABCdefGHIjklMNOpqrsTUVwxyz") {
+                showMessage('❌ لطفاً توکن ربات را در کد قرار دهید!', 'error');
+                isActive = false;
+                botInfo = null;
+                updateUI();
+                return false;
+            }
+
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getMe`);
+                const data = await response.json();
+                
+                if (data.ok) {
+                    botInfo = data.result;
+                    showMessage(`✅ ربات ${botInfo.first_name} متصل شد!`, 'success');
+                    updateUI();
+                    return true;
+                } else {
+                    showMessage('❌ توکن اشتباه است یا ربات وجود ندارد!', 'error');
+                    isActive = false;
+                    botInfo = null;
+                    updateUI();
+                    return false;
+                }
+            } catch (error) {
+                showMessage('❌ خطا در ارتباط با سرور تلگرام!', 'error');
+                return false;
+            }
+        }
+
+        // ===== فعال‌سازی =====
+        async function activateBot() {
+            if (!BOT_TOKEN || BOT_TOKEN === "1234567890:ABCdefGHIjklMNOpqrsTUVwxyz") {
+                showMessage('❌ لطفاً توکن ربات را در کد قرار دهید!', 'error');
+                return;
+            }
+
+            const activateBtn = document.getElementById('activateBtn');
+            activateBtn.disabled = true;
+            activateBtn.classList.add('btn-loading');
+
+            const success = await checkBotStatus();
+            
+            if (success) {
+                isActive = true;
+                updateUI();
+                
+                // تغییر اسم به ساعت فعلی
+                await updateBotName();
+                
+                // شروع آپدیت هر دقیقه
+                if (updateInterval) clearInterval(updateInterval);
+                updateInterval = setInterval(updateBotName, 60000);
+                
+                showMessage('✅ ربات فعال شد! اسم هر دقیقه به ساعت تغییر میکنه.', 'success');
+            } else {
+                isActive = false;
+                updateUI();
+            }
+
+            activateBtn.disabled = false;
+            activateBtn.classList.remove('btn-loading');
+        }
+
+        // ===== قطع کردن =====
+        async function deactivateBot() {
+            const deactivateBtn = document.getElementById('deactivateBtn');
+            deactivateBtn.disabled = true;
+            deactivateBtn.classList.add('btn-loading');
+
+            isActive = false;
+            botInfo = null;
+            
+            if (updateInterval) {
+                clearInterval(updateInterval);
+                updateInterval = null;
+            }
+            
+            updateUI();
+            showMessage('❌ ربات با موفقیت قطع شد!', 'error');
+
+            deactivateBtn.disabled = false;
+            deactivateBtn.classList.remove('btn-loading');
+        }
+
+        // ===== بارگذاری =====
+        window.onload = function() {
+            createParticles();
+            
+            if (!BOT_TOKEN || BOT_TOKEN === "1234567890:ABCdefGHIjklMNOpqrsTUVwxyz") {
+                showMessage('⚠️ لطفاً توکن ربات را در کد قرار دهید!', 'error');
+                document.getElementById('activateBtn').disabled = true;
+            } else {
+                loadState();
+                // اگر فعال بود، آپدیت رو شروع کن
+                if (isActive) {
+                    updateInterval = setInterval(updateBotName, 60000);
+                }
+            }
+
+            window.addEventListener('resize', function() {
+                clearTimeout(window.resizeTimeout);
+                window.resizeTimeout = setTimeout(() => {
+                    document.getElementById('particles').innerHTML = '';
+                    createParticles();
+                }, 250);
+            });
+
+            console.log('⏰ ربات تغییر اسم به ساعت');
+            console.log('📌 توکن:', BOT_TOKEN ? '✅ تنظیم شده' : '❌ تنظیم نشده');
+        };
+    </script>
+</body>
+</html>
